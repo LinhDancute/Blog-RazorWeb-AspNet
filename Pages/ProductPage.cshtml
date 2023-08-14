@@ -1,0 +1,39 @@
+﻿@page "/product/{id:int?}"
+@model AppRazor.Pages.ProductPageModel
+@{
+    var product = Model.product;
+    var products = Model._productService.AllProducts();
+
+    <h1>@ViewData["Title"]</h1>
+}
+
+@if (product != null)
+{
+    <h2>@product.Name</h2>
+    <p>Mo ta: @product.Description</p>
+    <p>Gia: @product.Price</p>
+
+    <p>
+        <a asp-page="ProductPage" asp-route-id="">Danh sach san pham</a>
+    </p>
+    <form method="post" asp-page="ProductPage" asp-page-handler="delete" asp-route-id ="@product.Id">
+        <button type="submit" class="btn btn-danger">Xoa</button>
+
+    </form>
+}else {
+    <p>Tong so SP: @products.Count</p>
+    <ul>
+        @foreach (var item in products)
+        {
+            <li>
+                <a asp-page="ProductPage" asp-route-id="@item.Id">@item.Name</a>
+            </li>
+        }
+    </ul>
+    <hr>
+    <p>
+        <a class="btn btn-primary" asp-page="ProductPage" asp-page-handler="lastproduct">San pham cuoi</a>
+        <a class="btn btn-danger" asp-page="ProductPage" asp-page-handler="RemoveAll">Xoa tat ca SP</a>
+        <a class="btn btn-danger" asp-page="ProductPage" asp-page-handler="Load">Nap san pham</a>
+    </p>
+}

@@ -1,0 +1,49 @@
+@page "/contact.html"
+@model ContactRequestModel
+
+
+@{
+    ViewData["Title"] = "LIEN HE";
+}
+
+<h1 class="display-4">Trang lien he</h1>
+<p class="lead">Dien cac thong tin lien he</p>
+<hr>
+
+<form class="bg-light p-2 m-2" method="post" asp-page="ContactRequest">
+    <div class="mb-3">
+        <label class="form-label" asp-for="@Model.userContact.UserID"></label>
+        <input class="form-control" asp-for="@Model.userContact.UserID" type="text" name="UserID">
+        <span class="text-danger" asp-validation-for="userContact.UserID"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" asp-for="@Model.userContact.Email"></label>
+        <input class="form-control" asp-for="@Model.userContact.Email" type="email" name="Email">
+        <span class="text-danger" asp-validation-for="userContact.Email"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" asp-for="@Model.userContact.UserName"></label>
+        <input class="form-control" asp-for="@Model.userContact.UserName" type="text" name="UserName">
+        <span class="text-danger" asp-validation-for="userContact.UserName"></span>
+    </div>
+
+    <button type="submit" class="btn btn-danger">Gui</button>
+
+</form>
+
+<div class="alert alert-danger">
+    <p>Thong tin User</p>
+    <ul>
+        <li>UserID: @Model.userContact.UserID</li>
+        <li>Email: @Model.userContact.Email</li>
+        <li>Username: @Model.userContact.UserName</li>
+    </ul>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

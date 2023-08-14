@@ -1,0 +1,90 @@
+﻿@page
+@using AppRazor
+@model IndexModel
+@using AppRazor.models
+@addTagHelper *, AppRazor
+@{
+    ViewData["Title"] = "Home page";
+    ViewData["titlemessage"] = "New Product";
+    ViewData["content"] = "You are watching new products";
+
+    var posts = ViewData["posts"] as List<Article>;
+
+}
+
+<form method="post">
+    <label for="">Enter your name</label>
+    <input name="username" type="text">
+    <input type="submit" value="Send">
+</form>
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+
+@await Html.PartialAsync("_Message")
+@await Component.InvokeAsync("ProductBox", false)
+
+@{
+    var product1 = new Product() {Name = "Iphone 14", Description = "Apple", Price = 1600};
+    var product2 = new Product() {Name = "Iphone 13", Description = "Apple", Price = 1200};
+    var product3 = new Product() {Name = "Samsung Edge", Description = "Samsung", Price = 900};
+    var product4 = new Product() {Name = "Oppo", Description = "Oppo", Price = 700};
+
+}
+<div class="row bg-info">
+    <div class="col">
+        <partial name = "_ProductItem" model="product1"/>
+    </div>
+    <div class="col">
+        @await Html.PartialAsync("_ProductItem", product2)
+    </div>
+    <div class="col">
+        @{
+            await Html.RenderPartialAsync("_ProductItem", product3);
+        }
+    </div>
+</div>
+
+<div class="row bg-warning">
+    @{
+    var products = new List<Product>(){
+        new Product() {Name = "SP1", Description = "Apple", Price = 1600},
+        new Product() {Name = "SP2", Description = "Apple", Price = 1200},
+        new Product() {Name = "SP3", Description = "Samsung", Price = 900},
+        new Product() {Name = "SP4", Description = "Oppo", Price = 700},
+    };
+    
+    foreach (var item in products)
+    {
+        <div>
+            <partial name = "_ProductItem" model="item"/>
+        </div>
+    }
+
+}
+</div>
+<a asp-page="ViewProduct" asp-route-id="3">xem sp 3</a>
+
+
+@{
+   var productlist = new List<String> {
+        "Tên Sản phẩm 1",
+        "Tên Sản phẩm 2",
+        "Tên Sản phẩm 3"
+     };
+}
+
+<mylist
+    list-title="Danh sach san pham"
+    list-items="@productlist">
+</mylist>
+
+<ol>
+    @foreach (var item in posts)
+    {
+        <li>@item.Title</li>
+    }
+</ol>

@@ -27,15 +27,22 @@ builder.Services.AddDbContext<MyBlogContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MyBlogContext>();
+//builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MyBlogContext>();
 
 //đăng kí Identity
-// builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MyBlogContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MyBlogContext>();
 // builder.Services.AddIdentity<AppUser, IdentityRole>()
 //     .AddEntityFrameworkStores<MyBlogContext>()
 //     .AddDefaultTokenProviders();
 
 
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+                    .AddEntityFrameworkStores<MyBlogContext>()
+                    .AddDefaultTokenProviders();
+
+// services.AddDefaultIdentity<AppUser>()
+//         .AddEntityFrameworkStores<MyBlogContext>()
+//         .AddDefaultTokenProviders();
 
 // Truy cập IdentityOptions
 builder.Services.Configure<IdentityOptions>(options =>
@@ -106,3 +113,28 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
+
+/*
+CREATE, READ, UPDATE, DELETE (CRUD)
+
+dotnet aspnet-codegenerator razorpage -m razorweb.models.Article -dc razorweb.models.MyBlogContext -outDir Pages/Blog -udl --referenceScriptLibraries
+
+
+Identity:
+    - Athentication: Xác định danh tính  -> Login, Logout ...
+    - Authorization: Xác thực quyền truy cập
+    - Quản lý user: Sign Up, User, Role  ...
+
+
+
+
+ /Identity/Account/Login
+ /Identity/Account/Manage
+
+ dotnet aspnet-codegenerator identity -dc razorweb.models.MyBlogContext
+
+CallbackPath:
+ https://localhost:5001/dang-nhap-tu-google
+ 
+
+*/

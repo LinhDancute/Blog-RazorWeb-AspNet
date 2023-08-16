@@ -34,7 +34,7 @@ namespace AppRazor.Pages
 
         public IActionResult OnGetLastProduct() {
             ViewData["Title"] = $"San pham cuoi";
-            product =_productService.AllProducts().LastOrDefault();
+            product = _productService.AllProducts().LastOrDefault();
 
             if (product != null)
             {

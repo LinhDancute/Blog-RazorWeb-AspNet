@@ -3,9 +3,15 @@
 
 @{
     ViewData["Title"] = "Đăng nhập";
+
+    var thongbao = TempData["ErrorMessage"];
 }
 
 <h1>@ViewData["Title"]</h1>
+@if (TempData.ContainsKey("ErrorMessage"))
+{
+    <partial name="/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model = "thongbao"/>
+}
 <div class="row">
     <div class="col-md-4">
         <section>
@@ -45,8 +51,8 @@
         </section>
     </div>
     <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Sử dụng dịch vụ ngoài để đăng nhập.</h3>
+      <section>
+            <h4>Sử dụng dịch vụ ngoài (Google, Twitter ...) để đăng nhập</h4>
             <hr />
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
@@ -68,7 +74,7 @@
                                 }
                             </p>
                         </div>
-            </form>
+                    </form>
                 }
             }
         </section>

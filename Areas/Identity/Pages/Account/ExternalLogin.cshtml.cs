@@ -91,29 +91,6 @@ namespace RazorWebAspNet.Areas.Identity.Pages.Account
 
         // Post yêu cầu login bằng dịch vụ ngoài
         // Provider = Google, Facebook ... 
-        // public async Task<IActionResult> OnPostAsync(string provider, string returnUrl = null)
-        // {
-        //     // Kiểm tra yêu cầu dịch vụ provider tồn tại
-        //     var listprovider = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        //     var provider_process = listprovider.Find((m) => m.Name == provider);
-        //     if (provider_process == null)
-        //     {
-        //         return NotFound("Dịch vụ không chính xác: " + provider);
-        //     }
-
-        //     // redirectUrl - là Url sẽ chuyển hướng đến - sau khi CallbackPath (/dang-nhap-tu-google) thi hành xong
-        //     // nó bằng identity/account/externallogin?handler=Callback 
-        //     // tức là gọi OnGetCallbackAsync 
-        //     var redirectUrl = Url.Page("./su-dung-dich-vu-ngoai/", pageHandler: "Callback", values: new { returnUrl });
-
-        //     // Cấu hình 
-        //     var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-
-        //     // Chuyển hướng đến dịch vụ ngoài (Googe, Facebook)
-        //     //return new ChallengeResult(provider, properties);
-        //     return Redirect(redirectUrl);
-        // }
-
         public async Task<IActionResult> OnPostAsync(string provider, string returnUrl = null)
         {
             // Kiểm tra yêu cầu dịch vụ provider tồn tại
@@ -124,28 +101,23 @@ namespace RazorWebAspNet.Areas.Identity.Pages.Account
                 return NotFound("Dịch vụ không chính xác: " + provider);
             }
 
-            // Set the returnUrl as a query parameter for the ExternalLogin page
-            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+            // redirectUrl - là Url sẽ chuyển hướng đến - sau khi CallbackPath (/dang-nhap-tu-google) thi hành xong
+            // nó bằng identity/account/externallogin?handler=Callback 
+            // tức là gọi OnGetCallbackAsync 
+            var redirectUrl = Url.Page("./ExternalLogin/", pageHandler: "Callback", values: new { returnUrl });
 
-            // Check if the redirectUrl is null or empty before performing the redirect
-            if (!string.IsNullOrEmpty(redirectUrl))
-            {
-                // Redirect to the ExternalLogin page
-                return Redirect(redirectUrl);
-            }
-            else
-            {
-                // Handle the case when redirectUrl is null or empty
-                // You can return an appropriate view or message
-                return NotFound("Invalid redirect URL.");
-            }
+            // Cấu hình 
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+            // Chuyển hướng đến dịch vụ ngoài (Googe, Facebook)
+            return new ChallengeResult(provider, properties);
+            //return Redirect(redirectUrl);
         }
-
-
 
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
-            
+            //return Content("Dừng lại ở đây");
+
             //_logger.LogInformation("Callback received. RemoteError: {remoteError}", remoteError);
             returnUrl = returnUrl ?? Url.Content("~/");
             if (remoteError != null)
@@ -253,12 +225,38 @@ namespace RazorWebAspNet.Areas.Identity.Pages.Account
                              => user2 (mail2@abc.com)
                         */
                         ModelState.AddModelError(string.Empty, "Không liên kết được tài khoản, hãy sử dụng email khác");
-                        //return Page();
+                        return Page();
                     }
                 }
+                
+                if ((externalEmailUser != null) && (registeredUser == null))
+                {
+                    ModelState.AddModelError(string.Empty, "Không hỗ trợ tạo tài khoản mới - có email khác từ dịch vụ ngoài");
+                    return Page();
+                }
 
+                if ((externalEmailUser == null) && (externalEmail == Input.Email))
+                {
+                    var newUser = new AppUser() {
+                        UserName = externalEmail,
+                        Email = externalEmail
+                    };
 
-                return Content("Dừng lại ở đây");
+                    var resultNewUser = await _userManager.CreateAsync(newUser); 
+                    if (true)
+                    {
+                        await _userManager.AddLoginAsync(newUser, info);
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                        await _userManager.ConfirmEmailAsync(newUser, code);
+
+                        await _signInManager.SignInAsync(newUser, isPersistent: false);
+
+                        return LocalRedirect(returnUrl);
+                    } else {
+                        ModelState.AddModelError(string.Empty, "Không tạo được tài khoản mới");
+                        return Page();
+                    }
+                }
 
                 var user = CreateUser();
 

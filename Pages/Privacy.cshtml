@@ -1,8 +1,21 @@
 ﻿@page
 @model PrivacyModel
+@using Microsoft.AspNetCore.Http
+
 @{
     ViewData["Title"] = "Privacy Policy";
+    //var remoteIpAddress = Context.Features.Get<IHttpConnectionFeature>()?.RemoteIpAddress;
+    //var remoteIpAddress = request.HttpContext.Connection.RemoteIpAddress;
+
 }
 <h1>@ViewData["Title"]</h1>
 
 <p>Use this page to detail your site's privacy policy.</p>
+
+@* <p>Remote IP Address: @remoteIpAddress</p>
+In this example, we are accessing the IHttpConnectionFeature from the HttpContext.Features collection to get the remote IP address. This should resolve the "The name 'Context' does not exist in the current context" issue. *@
+
+
+
+
+

@@ -8,9 +8,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using AppRazor.models;
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("MyBlogContextConnection") ?? throw new InvalidOperationException("Connection string 'MyBlogContextConnection' not found.");
+
+// Add services to the container.
+builder.Services.AddRazorPages();
+
+// builder.Services.AddHttpLogging(options =>
+// {
+//     options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
+// });
 
 // Load appsettings.json configurations
 var configuration = new ConfigurationBuilder()
@@ -18,8 +29,7 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .Build();
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+
 
 // Register the MyBlogContext with the dependency injection container.
 builder.Services.AddDbContext<MyBlogContext>(options =>
@@ -40,9 +50,6 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
                     .AddEntityFrameworkStores<MyBlogContext>()
                     .AddDefaultTokenProviders();
 
-// services.AddDefaultIdentity<AppUser>()
-//         .AddEntityFrameworkStores<MyBlogContext>()
-//         .AddDefaultTokenProviders();
 
 // Truy cập IdentityOptions
 builder.Services.Configure<IdentityOptions>(options =>
@@ -81,19 +88,70 @@ builder.Services.ConfigureApplicationCookie(options =>
             options.AccessDeniedPath = "/khongduoctruycap.html";
         });
 
-builder.Services.AddAuthentication()
+
+// builder.Services.AddAuthentication(options =>
+//                     {
+//                         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//                         options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//                         options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//                     })
+//                     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+//                     {
+//                         //   ... 
+//                     })
+//                     .AddGoogle(options =>
+//                     {
+//                         IConfigurationSection googleAuthNSection =
+//                             configuration.GetSection("Authentication:Google");
+
+//                         options.ClientId = googleAuthNSection["ClientId"];
+//                         options.ClientSecret = googleAuthNSection["ClientSecret"];
+//                         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//                         options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+//                         options.CallbackPath = "/dang-nhap-tu-google";
+//                     });
+
+builder.Services.AddAuthentication().AddCookie()
                 .AddGoogle(options =>
                 {
                     var gconfig = configuration.GetSection("Authentication:Google");
                     options.ClientId = gconfig["ClientId"];
                     options.ClientSecret = gconfig["ClientSecret"];
+                    options.CorrelationCookie.SameSite = SameSiteMode.Lax;
                     options.CallbackPath = "/dang-nhap-tu-google"; // Relative path instead of absolute URL
                 });
+// .AddFacebook(options =>
+// {
+//     var fconfig = configuration.GetSection("Authentication:Facebook");
+//     options.AppId = fconfig["AppId"];
+//     options.AppSecret = fconfig["AppSecret"];
+//     options.CallbackPath = "/dang-nhap-tu-facebook";
+// })
+// .AddTwitter()
+// .AddMicrosoftAccount();
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = SameSiteMode.Strict;
+            });
+
 
 // Add other services to the container.
 builder.Services.AddSingleton<ProductService>();
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();
+app.UseHttpLogging();
+
+// app.Use(async (context, next) =>
+// {
+//     // Connection: RemoteIp
+//     app.Logger.LogInformation("Request RemoteIp: {RemoteIpAddress}",
+//         context.Connection.RemoteIpAddress);
+
+//     await next(context);
+// });
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -103,11 +161,19 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// var cookiePolicyOptions = new CookiePolicyOptions
+// {
+//     MinimumSameSitePolicy = SameSiteMode.Strict,
+// };
+
+// app.UseCookiePolicy(CookiePolicyOptions);
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapRazorPages();

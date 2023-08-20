@@ -119,14 +119,14 @@ builder.Services.AddAuthentication().AddCookie()
                     options.ClientSecret = gconfig["ClientSecret"];
                     options.CorrelationCookie.SameSite = SameSiteMode.Lax;
                     options.CallbackPath = "/dang-nhap-tu-google"; // Relative path instead of absolute URL
+                })
+                .AddFacebook(options =>
+                {
+                    var fconfig = configuration.GetSection("Authentication:Facebook");
+                    options.AppId = fconfig["AppId"];
+                    options.AppSecret = fconfig["AppSecret"];
+                    options.CallbackPath = "/dang-nhap-tu-facebook";
                 });
-// .AddFacebook(options =>
-// {
-//     var fconfig = configuration.GetSection("Authentication:Facebook");
-//     options.AppId = fconfig["AppId"];
-//     options.AppSecret = fconfig["AppSecret"];
-//     options.CallbackPath = "/dang-nhap-tu-facebook";
-// })
 // .AddTwitter()
 // .AddMicrosoftAccount();
 

@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AppRazor.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace RazorWebAspNet.Areas.Identity.Pages.Account.Manage
 {
+    [Authorize]
     public class EmailModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
@@ -70,7 +72,7 @@ namespace RazorWebAspNet.Areas.Identity.Pages.Account.Manage
             /// </summary>
             [Required]
             [EmailAddress]
-            [Display(Name = "New email")]
+            [Display(Name = "Email mới")]
             public string NewEmail { get; set; }
         }
 
@@ -127,9 +129,9 @@ namespace RazorWebAspNet.Areas.Identity.Pages.Account.Manage
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
                     "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Bấm vào đây để đổi email</a>.");
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                StatusMessage = "Hãy mở hòm thư email mới để xác nhận.";
                 return RedirectToPage();
             }
 

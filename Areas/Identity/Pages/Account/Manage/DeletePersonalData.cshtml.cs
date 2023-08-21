@@ -3,9 +3,11 @@
 #nullable disable
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AppRazor.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace RazorWebAspNet.Areas.Identity.Pages.Account.Manage
 {
+    [Authorize]
     public class DeletePersonalDataModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
@@ -48,6 +51,7 @@ namespace RazorWebAspNet.Areas.Identity.Pages.Account.Manage
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
+            [DisplayName("Mật khẩu")]
             public string Password { get; set; }
         }
 
@@ -82,7 +86,7 @@ namespace RazorWebAspNet.Areas.Identity.Pages.Account.Manage
             {
                 if (!await _userManager.CheckPasswordAsync(user, Input.Password))
                 {
-                    ModelState.AddModelError(string.Empty, "Incorrect password.");
+                    ModelState.AddModelError(string.Empty, "Sai mật khẩu.");
                     return Page();
                 }
             }

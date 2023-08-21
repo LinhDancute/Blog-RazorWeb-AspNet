@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Bogus.DataSets;
 using Microsoft.AspNetCore.Identity;
 
 namespace AppRazor.models
@@ -9,5 +10,7 @@ namespace AppRazor.models
         [StringLength(400)]
         public string? HomeAddress { get; set; }
 
+        [DataType(DataType.Date)]
+        public DateTime? BirthDate { get; set; }
     }
 }

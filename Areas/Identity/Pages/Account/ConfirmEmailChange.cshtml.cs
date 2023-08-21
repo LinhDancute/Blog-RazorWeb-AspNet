@@ -46,20 +46,26 @@ namespace RazorWebAspNet.Areas.Identity.Pages.Account
             }
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            var oldEmail = user.Email;
+
             var result = await _userManager.ChangeEmailAsync(user, email, code);
             if (!result.Succeeded)
             {
-                StatusMessage = "Lỗi khi thay đổi email.";
+                StatusMessage = "Lỗi thay đổi email.";
                 return Page();
             }
 
             // In our UI email and user name are one and the same, so when we update the email
             // we need to update the user name.
-            var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
-            if (!setUserNameResult.Succeeded)
+            if (user.UserName == oldEmail)
             {
-                StatusMessage = "Lỗi thay đổi tên người dùng.";
-                return Page();
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
+                if (!setUserNameResult.Succeeded)
+                {
+                    StatusMessage = "Lỗi thay đổi tên người dùng.";
+                    return Page();
+                }
             }
 
             await _signInManager.RefreshSignInAsync(user);

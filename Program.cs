@@ -1,16 +1,9 @@
-using System;
-using System.Configuration;
-using Microsoft.Extensions.Configuration;
 using AppRazor;
 using AppRazor.models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using AppRazor.models;
-using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
+using AppRazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("MyBlogContextConnection") ?? throw new InvalidOperationException("Connection string 'MyBlogContextConnection' not found.");
@@ -35,7 +28,7 @@ var configuration = new ConfigurationBuilder()
 builder.Services.AddDbContext<MyBlogContext>(options =>
 {
     //options.UseSqlServer(connectionString);
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MyBlogContext"));
 });
 
 //builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MyBlogContext>();
@@ -89,6 +82,13 @@ builder.Services.ConfigureApplicationCookie(options =>
             options.AccessDeniedPath = "/khongduoctruycap.html";
         });
 
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    // Trên 30 giây truy cập lại sẽ nạp lại thông tin User (Role)
+    // SecurityStamp trong bảng User đổi -> nạp lại thông tinn Security
+    options.ValidationInterval = TimeSpan.FromSeconds(5);
+});
+
 
 // builder.Services.AddAuthentication(options =>
 //                     {
@@ -139,6 +139,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 
 // Add other services to the container.
 builder.Services.AddSingleton<ProductService>();
+builder.Services.AddSingleton<IdentityErrorDescriber, AppIdentityErrorDescriber>();
 
 var app = builder.Build();
 
@@ -189,9 +190,24 @@ dotnet aspnet-codegenerator razorpage -m razorweb.models.Article -dc razorweb.mo
 
 Identity:
     - Athentication: Xác định danh tính  -> Login, Logout ...
+    
     - Authorization: Xác thực quyền truy cập
+     Role-based authorization - xác thực quyền theo vai trò
+      - Role(vai trò): (Admin, Editor, Manager, Member, ...)
+      
+      Areas/Admin/Pages/Role
+       Index
+       Create
+       Edit
+       Delete
+
+       dotnet new page -n Index -o Areas/Admin/Pages/Role -na RazorWebAspNet.Admin.Role
+    
+        [Authorize] - Controller, Action, PageModel -> dang nhap
+    
     - Quản lý user: Sign Up, User, Role  ...
 
+    
 
 
 

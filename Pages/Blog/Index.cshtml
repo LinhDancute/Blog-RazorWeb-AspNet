@@ -8,16 +8,6 @@
 
 
 
-@{
-    var pagingmodel = new AppRazor.Helpers.PagingModel() {
-        currentPage = @Model.currentPage,
-        countPages = @Model.countPages,
-        generateUrl = (int? p) => Url.Page("/Blog/Index", new {p = p})
-    };
-}
-
-<partial name="_Paging" model="@pagingmodel"/>
-
 <h1>Danh sách bài viết</h1>
 <form class="p-3" method="get" asp-page="./Index">
     <label for="">Tìm kiếm</label>
@@ -64,3 +54,13 @@
 }
     </tbody>
 </table>
+
+@{
+    var pagingmodel = new AppRazor.Helpers.PagingModel() {
+        currentPage = @Model.currentPage,
+        countPages = @Model.countPages,
+        generateUrl = (int? p) => Url.Page("/Blog/Index", new {p = p})
+    };
+}
+
+<partial name="_Paging" model="@pagingmodel"/>

@@ -3,8 +3,7 @@
 @{
     ViewData["Title"] = "Gán vai trò";
 }
-
-<h3>Thiết lập mật khẩu cho thành viên: @Model.user.UserName</h3>
+<h3>Thiết lập role cho user: @Model.user.UserName</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 
 <div class="row">
@@ -23,6 +22,33 @@
             <button type="submit" class="btn btn-primary">Cập nhật</button>
             <a class="btn btn-primary" asp-page="./Index">Danh sách thành viên</a>
         </form>
+        <hr>
+        <p>Các đặc tính (claim) của người dùng có được từ vai trò (role):</p>
+        @if (Model.claimsInRole.Count > 0)
+        {
+            <ul>
+                @foreach (var claim in Model.claimsInRole)
+                {
+                    <li>
+                        @claim.ClaimType : @claim.ClaimValue
+                    </li>
+                }
+            </ul>
+        }
+        <p>Các đặc tính (claim) riêng:
+            <a asp-page="./EditUserRoleClaim" asp-page-handler ="AddClaim" asp-route-userid = "@Model.user.Id">+Thêm đặc tính riêng</a>
+        </p>
+        @if (Model.claimsInUserClaim.Count > 0)
+        {
+            <ul>
+                @foreach (var claim in Model.claimsInUserClaim)
+                {
+                    <li>
+                        <a asp-page="./EditUserRoleClaim" asp-page-handler="EditClaim" asp-route-claimid = "@claim.Id"> @claim.ClaimType : @claim.ClaimValue</a>
+                    </li>
+                }
+            </ul>
+        }
     </div>
 </div>
 

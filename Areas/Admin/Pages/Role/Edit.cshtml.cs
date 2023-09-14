@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using AppRazor.models;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppRazor.Admin.Role
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Policy = "AllowEditRole")]
     public class EditModel : RolePageModel
     {
         public EditModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext)
@@ -24,27 +25,30 @@ namespace AppRazor.Admin.Role
         [BindProperty]
         public InputModel Input { get; set; }
 
+        public List<IdentityRoleClaim<string>> Claims { get; set; }
         public IdentityRole role { get; set; }
         public async Task<IActionResult> OnGet(string roleid)
         {
             if (roleid == null) return NotFound("Không tìm thấy vai trò");
-                var role = await _roleManager.FindByIdAsync(roleid);
+                role = await _roleManager.FindByIdAsync(roleid);
                 if (role != null)
                 {
                     Input = new InputModel() {
                         Name = role.Name
                     };
+                Claims = await _context.RoleClaims.Where(rc => rc.RoleId == role.Id).ToListAsync();
                 return Page();
-                }
-        
+            }
+
             return NotFound("Không tìm thấy vai trò");
         }
 
         public async Task<IActionResult> OnPostAsync(string roleid)
         {
             if (roleid == null) return NotFound("Không tìm thấy vai trò");
-            var role = await _roleManager.FindByIdAsync(roleid);
+            role = await _roleManager.FindByIdAsync(roleid);
             if (role == null) return NotFound("Không tìm thấy vai trò");
+            Claims = await _context.RoleClaims.Where(rc => rc.RoleId == role.Id).ToListAsync();
 
             if (!ModelState.IsValid)
             {

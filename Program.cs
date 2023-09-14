@@ -141,6 +141,30 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<IdentityErrorDescriber, AppIdentityErrorDescriber>();
 
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy("AllowEditRole", policyBuilder => {
+        //Dieu kien cua policy
+        policyBuilder.RequireAuthenticatedUser();
+        //policyBuilder.RequireRole("Administrator");
+        // policyBuilder.RequireRole("Editor");
+
+        //policyBuilder.RequireClaim("manage.role", "add", "update");
+        policyBuilder.RequireClaim("can-edit", "post");
+
+
+        // policyBuilder.RequireClaim("",new string[] {
+        //     "",
+        //     ""
+        // });
+
+        // IdentityRoleClaim<string> claim1;
+        // IdentityUserClaim<string> claim2;
+
+    });
+
+    
+});
+
 var app = builder.Build();
 
 app.UseForwardedHeaders();
@@ -192,9 +216,13 @@ Identity:
     - Athentication: Xác định danh tính  -> Login, Logout ...
     
     - Authorization: Xác thực quyền truy cập
-     Role-based authorization - xác thực quyền theo vai trò
+     * Role-based authorization - xác thực quyền theo vai trò
       - Role(vai trò): (Admin, Editor, Manager, Member, ...)
-      
+        
+     * Policy-based authorization
+     * Claims-based authorization
+        Claims -> Đặc tính, tính chất của đối tượng (user)
+
       Areas/Admin/Pages/Role
        Index
        Create

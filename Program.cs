@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using AppRazor.Services;
+using AppRazor.Security.Requirements;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("MyBlogContextConnection") ?? throw new InvalidOperationException("Connection string 'MyBlogContextConnection' not found.");
@@ -11,18 +13,11 @@ var connectionString = builder.Configuration.GetConnectionString("MyBlogContextC
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// builder.Services.AddHttpLogging(options =>
-// {
-//     options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
-// });
-
 // Load appsettings.json configurations
 var configuration = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json")
     .Build();
-
-
 
 // Register the MyBlogContext with the dependency injection container.
 builder.Services.AddDbContext<MyBlogContext>(options =>
@@ -31,19 +26,9 @@ builder.Services.AddDbContext<MyBlogContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyBlogContext"));
 });
 
-//builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MyBlogContext>();
-
-//đăng kí Identity
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MyBlogContext>();
-// builder.Services.AddIdentity<AppUser, IdentityRole>()
-//     .AddEntityFrameworkStores<MyBlogContext>()
-//     .AddDefaultTokenProviders();
-
-
 builder.Services.AddIdentity<AppUser, IdentityRole>()
                     .AddEntityFrameworkStores<MyBlogContext>()
                     .AddDefaultTokenProviders();
-
 
 // Truy cập IdentityOptions
 builder.Services.Configure<IdentityOptions>(options =>
@@ -89,29 +74,6 @@ builder.Services.Configure<SecurityStampValidatorOptions>(options =>
     options.ValidationInterval = TimeSpan.FromSeconds(5);
 });
 
-
-// builder.Services.AddAuthentication(options =>
-//                     {
-//                         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//                         options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//                         options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//                     })
-//                     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-//                     {
-//                         //   ... 
-//                     })
-//                     .AddGoogle(options =>
-//                     {
-//                         IConfigurationSection googleAuthNSection =
-//                             configuration.GetSection("Authentication:Google");
-
-//                         options.ClientId = googleAuthNSection["ClientId"];
-//                         options.ClientSecret = googleAuthNSection["ClientSecret"];
-//                         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//                         options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-//                         options.CallbackPath = "/dang-nhap-tu-google";
-//                     });
-
 builder.Services.AddAuthentication().AddCookie()
                 .AddGoogle(options =>
                 {
@@ -136,11 +98,6 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
                 options.MinimumSameSitePolicy = SameSiteMode.Strict;
             });
 
-
-// Add other services to the container.
-builder.Services.AddSingleton<ProductService>();
-builder.Services.AddSingleton<IdentityErrorDescriber, AppIdentityErrorDescriber>();
-
 builder.Services.AddAuthorization(options => {
     options.AddPolicy("AllowEditRole", policyBuilder => {
         //Dieu kien cua policy
@@ -150,49 +107,41 @@ builder.Services.AddAuthorization(options => {
 
         //policyBuilder.RequireClaim("manage.role", "add", "update");
         policyBuilder.RequireClaim("can-edit", "post");
-
-
-        // policyBuilder.RequireClaim("",new string[] {
-        //     "",
-        //     ""
-        // });
-
-        // IdentityRoleClaim<string> claim1;
-        // IdentityUserClaim<string> claim2;
-
     });
 
-    
+    options.AddPolicy("InGenZ", policyBuilder =>
+    {
+        policyBuilder.RequireAuthenticatedUser();
+        policyBuilder.Requirements.Add(new GenZRequirement());
+
+        // new GenzRequirement() => Authorization handler
+    });
+
+    options.AddPolicy("ShowAdminMenu", pb => {
+        pb.RequireRole("Administrator");
+    });
+
+    options.AddPolicy("CanUpdateArticle", builder => {
+        builder.Requirements.Add(new ArticleUpdateRequirement());
+    });
 });
+
+// Add other services to the container.
+builder.Services.AddSingleton<ProductService>();
+builder.Services.AddSingleton<IdentityErrorDescriber, AppIdentityErrorDescriber>();
+builder.Services.AddTransient<IAuthorizationHandler, AppAuthorizationHandler>();
 
 var app = builder.Build();
 
 app.UseForwardedHeaders();
 app.UseHttpLogging();
 
-// app.Use(async (context, next) =>
-// {
-//     // Connection: RemoteIp
-//     app.Logger.LogInformation("Request RemoteIp: {RemoteIpAddress}",
-//         context.Connection.RemoteIpAddress);
-
-//     await next(context);
-// });
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-// var cookiePolicyOptions = new CookiePolicyOptions
-// {
-//     MinimumSameSitePolicy = SameSiteMode.Strict,
-// };
-
-// app.UseCookiePolicy(CookiePolicyOptions);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

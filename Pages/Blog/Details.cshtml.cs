@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using AppRazor.models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppRazor.Pages_Blog
 {
+    [Authorize(Policy ="InGenZ")]
     public class DetailsModel : PageModel
     {
         private readonly AppRazor.models.MyBlogContext _context;

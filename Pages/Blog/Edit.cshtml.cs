@@ -13,9 +13,9 @@ namespace AppRazor.Pages_Blog
 {
     public class EditModel : PageModel
     {
-        private readonly AppRazor.models.MyBlogContext _context;
+        private readonly AppRazor.models.AppDBContext _context;
         private readonly IAuthorizationService _authorizationService;
-        public EditModel(AppRazor.models.MyBlogContext context, IAuthorizationService authorizationService)
+        public EditModel(AppRazor.models.AppDBContext context, IAuthorizationService authorizationService)
         {
             _context = context;
             _authorizationService = authorizationService;

@@ -12,7 +12,7 @@ namespace AppRazor.Admin.Role
     [Authorize(Roles = "Administrator")]
     public class CreateModel : RolePageModel
     {
-        public CreateModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext)
+        public CreateModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext)
                     : base(roleManager, myBlogContext)
         {
         }

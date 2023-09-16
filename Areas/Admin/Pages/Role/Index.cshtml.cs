@@ -9,7 +9,7 @@ namespace AppRazor.Admin.Role
     [Authorize(Roles = "Administrator")]
     public class IndexModel : RolePageModel
     {
-        public IndexModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext)
+        public IndexModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext)
             : base(roleManager, myBlogContext)
         {
         }

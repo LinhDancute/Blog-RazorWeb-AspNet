@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace RazorWebAspNet.Migrations
 {
-    [DbContext(typeof(MyBlogContext))]
+    [DbContext(typeof(AppDBContext))]
     [Migration("20230807163624_initdb")]
     partial class initdb
     {

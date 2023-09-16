@@ -9,7 +9,7 @@ namespace AppRazor.Admin.Role
     [Authorize(Roles = "Administrator")]
     public class DeleteModel : RolePageModel
     {
-        public DeleteModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext)
+        public DeleteModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext)
                     : base(roleManager, myBlogContext)
         {
         }

@@ -13,9 +13,9 @@ namespace AppRazor.Pages_Blog
     [Authorize(Policy ="InGenZ")]
     public class DetailsModel : PageModel
     {
-        private readonly AppRazor.models.MyBlogContext _context;
+        private readonly AppRazor.models.AppDBContext _context;
 
-        public DetailsModel(AppRazor.models.MyBlogContext context)
+        public DetailsModel(AppRazor.models.AppDBContext context)
         {
             _context = context;
         }

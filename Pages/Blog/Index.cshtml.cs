@@ -15,9 +15,9 @@ namespace AppRazor.Pages_Blog
 
     public class IndexModel : PageModel
     {
-        private readonly AppRazor.models.MyBlogContext _context;
+        private readonly AppRazor.models.AppDBContext _context;
 
-        public IndexModel(AppRazor.models.MyBlogContext context)
+        public IndexModel(AppRazor.models.AppDBContext context)
         {
             _context = context;
         }

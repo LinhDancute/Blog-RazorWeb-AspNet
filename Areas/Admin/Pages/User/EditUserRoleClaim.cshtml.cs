@@ -9,10 +9,10 @@ namespace AppRazor.Admin.User
 {
     public class EditUserRoleClaimModel : PageModel
     {
-        private readonly MyBlogContext _context;
+        private readonly AppDBContext _context;
         private readonly UserManager<AppUser> _userManager;
 
-        public EditUserRoleClaimModel(MyBlogContext context, UserManager<AppUser> userManager)
+        public EditUserRoleClaimModel(AppDBContext context, UserManager<AppUser> userManager)
         {
             _context = context;
             _userManager = userManager;

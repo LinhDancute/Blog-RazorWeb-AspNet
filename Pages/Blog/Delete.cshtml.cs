@@ -11,9 +11,9 @@ namespace AppRazor.Pages_Blog
 {
     public class DeleteModel : PageModel
     {
-        private readonly AppRazor.models.MyBlogContext _context;
+        private readonly AppRazor.models.AppDBContext _context;
 
-        public DeleteModel(AppRazor.models.MyBlogContext context)
+        public DeleteModel(AppRazor.models.AppDBContext context)
         {
             _context = context;
         }

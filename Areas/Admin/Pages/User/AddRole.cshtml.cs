@@ -22,13 +22,13 @@ namespace AppRazor.Admin.User
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly MyBlogContext _context;
+        private readonly AppDBContext _context;
 
         public AddRoleModel(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             RoleManager<IdentityRole> roleManager,
-            MyBlogContext context)
+            AppDBContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;

@@ -20,14 +20,14 @@ var configuration = new ConfigurationBuilder()
     .Build();
 
 // Register the MyBlogContext with the dependency injection container.
-builder.Services.AddDbContext<MyBlogContext>(options =>
+builder.Services.AddDbContext<AppDBContext>(options =>
 {
     //options.UseSqlServer(connectionString);
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyBlogContext"));
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>()
-                    .AddEntityFrameworkStores<MyBlogContext>()
+                    .AddEntityFrameworkStores<AppDBContext>()
                     .AddDefaultTokenProviders();
 
 // Truy cập IdentityOptions

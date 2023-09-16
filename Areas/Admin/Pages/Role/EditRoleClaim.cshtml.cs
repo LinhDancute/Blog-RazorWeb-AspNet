@@ -12,7 +12,7 @@ namespace AppRazor.Admin.Role
     [Authorize(Roles = "Administrator")]
     public class EditRoleClaimModel : RolePageModel
     {
-        public EditRoleClaimModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext)
+        public EditRoleClaimModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext)
                     : base(roleManager, myBlogContext)
         {
         }

@@ -10,7 +10,7 @@ namespace AppRazor.Admin.Role
     [Authorize(Policy = "AllowEditRole")]
     public class EditModel : RolePageModel
     {
-        public EditModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext)
+        public EditModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext)
                     : base(roleManager, myBlogContext)
         {
         }

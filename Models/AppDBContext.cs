@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppRazor.models
 {
-    public class MyBlogContext : IdentityDbContext<AppUser>
+    public class AppDBContext : IdentityDbContext<AppUser>
     {
         private readonly IConfiguration _configuration;
-        public MyBlogContext(DbContextOptions<MyBlogContext> options, IConfiguration configuration)
+        public AppDBContext(DbContextOptions<AppDBContext> options, IConfiguration configuration)
         : base(options)
         {
             _configuration = configuration;

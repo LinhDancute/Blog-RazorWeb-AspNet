@@ -10,9 +10,9 @@ public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
 
-    private readonly MyBlogContext _myBlogContext;
+    private readonly AppDBContext _myBlogContext;
 
-    public IndexModel(ILogger<IndexModel> logger, MyBlogContext myBlogContext)
+    public IndexModel(ILogger<IndexModel> logger, AppDBContext myBlogContext)
     {
         _logger = logger;
         _myBlogContext = myBlogContext;
